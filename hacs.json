@@ -1,0 +1,6 @@
+{
+    "name": "中医养生表",
+    "domains": ["tcm_bodyclock"],
+    "render_readme": true,
+    "country": "CN"
+  }

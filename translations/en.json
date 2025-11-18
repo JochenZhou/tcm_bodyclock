@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TCM Body Clock",
+        "description": "{message}",
+        "data": {
+          "openai_base_url": "OpenAI-compatible base URL (e.g. https://api.openai.com/v1)",
+          "openai_api_key": "OpenAI API key",
+          "openai_model": "Model name",
+          "weather_entity_id": "Weather entity",
+          "prompt_header": "System prompt"
+        }
+      }
+    },
+    "error": {
+      "no_weather_options": "No weather entities detected. Please configure a weather integration first."
+    },
+    "abort": {
+      "single_instance_allowed": "This integration can only be configured once."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "TCM Body Clock options",
+        "description": "{message}",
+        "data": {
+          "openai_base_url": "OpenAI-compatible base URL (e.g. https://api.openai.com/v1)",
+          "openai_api_key": "OpenAI API key",
+          "openai_model": "Model name",
+          "weather_entity_id": "Weather entity",
+          "prompt_header": "System prompt"
+        }
+      }
+    }
+  }
+}

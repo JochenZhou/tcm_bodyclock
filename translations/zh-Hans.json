@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "中医养生表",
+        "description": "{message}",
+        "data": {
+          "openai_base_url": "OpenAI 兼容 Base URL（如：https://api.openai.com/v1）",
+          "openai_api_key": "OpenAI API Key",
+          "openai_model": "模型名称",
+          "weather_entity_id": "选择天气实体",
+          "prompt_header": "系统提示词"
+        }
+      }
+    },
+    "error": {
+      "no_weather_options": "未找到天气实体，请先在 Home Assistant 中添加任意天气集成。"
+    },
+    "abort": {
+      "single_instance_allowed": "此集成仅能配置一次。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "中医养生表设置",
+        "description": "{message}",
+        "data": {
+          "openai_base_url": "OpenAI 兼容 Base URL（如：https://api.openai.com/v1）",
+          "openai_api_key": "OpenAI API Key",
+          "openai_model": "模型名称",
+          "weather_entity_id": "选择天气实体",
+          "prompt_header": "系统提示词"
+        }
+      }
+    }
+  }
+}

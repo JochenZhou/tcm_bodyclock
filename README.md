@@ -13,7 +13,7 @@
 - **经络值班**：显示当前时辰对应的经络值班信息（如“胆经值班”、“肝经值班”等）。
 - **养生重点**：提供每个时辰的养生重点（如“阳气初生宜安眠”、“藏血排毒黄金期”等）。
 - **推荐事项**：列出当前时辰的推荐事项（如“关闭电子设备，准备入睡”、“每小时起身活动”等）。
-- **注意事项**：提醒当前时辰的注意事项（如“熬夜加班、刷手机”、“空腹喝咖啡”等）。
+- **注意事项**：提醒当前时辰的一些注意事项（如“熬夜加班、刷手机”、“空腹喝咖啡”等）。
 - **自动化支持**：支持通过 Home Assistant 自动化实现定时提醒功能。
 
 ---
@@ -38,42 +38,52 @@
 
 ## 配置
 
-### 配置示例
-在 `configuration.yaml` 中添加以下配置：
+### 前置依赖
+- 至少安装一个 **天气** 集成，使系统中存在 `weather.xxx` 实体。
+- 具备一个可用的 **OpenAI 兼容接口**（例如官方 OpenAI API、DeepSeek，或自建的 OpenAI 兼容网关），并获取 Base URL、API Key 和模型名称。
 
-```yaml
-tcm_bodyclock:
-  name: 中医养生表
-```
-
-### 配置选项
-- **name**（可选）：自定义传感器名称，默认为“中医养生表”。
+### 配置步骤
+1. 在 **设置 → 设备与服务** 中点击 **添加集成**，搜索“中医养生表”。
+2. 在配置向导中填写以下信息：
+   - **OpenAI Base URL**：如 `https://api.openai.com/v1`，或者你的 OpenAI 兼容服务地址。
+   - **OpenAI API Key**：访问该接口所需的密钥。
+   - **模型名称**：如 `gpt-4o-mini`、`gpt-4.1`、`deepseek-chat` 等。
+   - **天气实体**：系统中所有 `weather` 域的实体都会列出，选择你希望作为参考的天气源，例如 `weather.home`。
+   - **系统提示词**：用于指定“小太医”的性格、语气和输出要求，默认已内置一份，可按需修改。
+3. 完成后创建实体。后续如果需要变更 API 或天气来源，可以在“中医养生表”集成卡片中点击 **配置**（Configure）重新进入向导调整选择。
 
 ---
 
 ## 使用说明
 
-### 实体属性
-添加集成后，会生成一个传感器实体 `sensor.zhong_yi_yang_sheng_biao`，其属性包括：
-- **state**：当前时辰（如“子时”、“丑时”等）。
-- **attributes**：
-  - **经络值班**：当前时辰对应的经络值班信息。
-  - **养生重点**：当前时辰的养生重点。
-  - **推荐事项**：当前时辰的推荐事项。
-  - **注意事项**：当前时辰的注意事项。
+### 实体结构
+添加集成后，会生成以下实体：
+
+- `sensor.zhong_yi_yang_sheng_biao`（名称：`时辰`，图标：`mdi:clock-outline`）
+  - **state**：当前时辰（如“子时”、“丑时”等）。
+- 以下为拆分的详细信息传感器（均在设备页面“诊断”区域展示）：
+  - `sensor.zhong_yi_yang_sheng_biao_jing_luo_zhi_ban`（名称：`中医养生表 经络值班`，图标：`mdi:yin-yang`）
+  - `sensor.zhong_yi_yang_sheng_biao_yang_sheng_zhong_dian`（名称：`中医养生表 养生重点`，图标：`mdi:heart-pulse`）
+  - `sensor.zhong_yi_yang_sheng_biao_tui_jian_shi_xiang`（名称：`中医养生表 推荐事项`，图标：`mdi:lightbulb-on`）
+  - `sensor.zhong_yi_yang_sheng_biao_zhu_yi_shi_xiang`（名称：`中医养生表 注意事项`，图标：`mdi:alert-circle`）
+  - `sensor.zhong_yi_yang_sheng_biao_zi_ran_ti_shi`（名称：`中医养生表 AI提醒`，图标：`mdi:robot`）
+  - 使用配置中填写的 OpenAI 兼容接口，结合当前养生表、天气状况与舒适度，生成一条温柔体贴的小太医式养生提醒。
+
+借助这些实体，可以直接在 Lovelace 卡片、自动化或语音助手中引用相应的信息，而无需再读取主实体的属性值。
 
 ### 前端展示
 在 Lovelace UI 中，可以使用 **实体卡片** 或 **Markdown 卡片** 展示信息。
 
 #### 实体卡片
+实体展示示例：
 ```yaml
 type: entities
 entities:
-  - entity: sensor.zhong_yi_yang_sheng_biao
-    name: 当前养生时辰
-    secondary_info: attribute
-    attribute: 养生重点
-    icon: mdi:clock-chinese
+  - entity: sensor.zhong_yi_yang_sheng_biao_jing_luo_zhi_ban
+  - entity: sensor.zhong_yi_yang_sheng_biao_yang_sheng_zhong_dian
+  - entity: sensor.zhong_yi_yang_sheng_biao_tui_jian_shi_xiang
+  - entity: sensor.zhong_yi_yang_sheng_biao_zhu_yi_shi_xiang
+  - entity: sensor.zhong_yi_yang_sheng_biao_zi_ran_ti_shi
 ```
 
 #### Markdown 卡片
@@ -82,13 +92,15 @@ type: markdown
 content: >
   **当前时辰**: {{ states('sensor.zhong_yi_yang_sheng_biao') }}
 
-  **经络值班**: {{ state_attr('sensor.zhong_yi_yang_sheng_biao', '经络值班') }}
+  **经络值班**: {{ states('sensor.zhong_yi_yang_sheng_biao_jing_luo_zhi_ban') }}
 
-  **养生重点**: {{ state_attr('sensor.zhong_yi_yang_sheng_biao', '养生重点') }}
+  **养生重点**: {{ states('sensor.zhong_yi_yang_sheng_biao_yang_sheng_zhong_dian') }}
 
-  **推荐事项**: {{ state_attr('sensor.zhong_yi_yang_sheng_biao', '推荐事项') }}
+  **推荐事项**: {{ states('sensor.zhong_yi_yang_sheng_biao_tui_jian_shi_xiang') }}
 
-  **注意事项**: {{ state_attr('sensor.zhong_yi_yang_sheng_biao', '注意事项') }}
+  **注意事项**: {{ states('sensor.zhong_yi_yang_sheng_biao_zhu_yi_shi_xiang') }}
+
+  **AI提醒**: {{ states('sensor.zhong_yi_yang_sheng_biao_zi_ran_ti_shi') }}
 ```
 
 ### 自动化示例
@@ -116,6 +128,7 @@ automation:
 
 ### 依赖
 - Home Assistant 2023.7 或更高版本。
+- 至少一个天气集成（`weather` 实体）。
 
 ### 代码结构
 ```

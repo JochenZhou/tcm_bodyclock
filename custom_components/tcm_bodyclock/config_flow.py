@@ -49,16 +49,15 @@ class TCMBodyClockConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if weather_default is None and weather_entities:
             weather_default = weather_entities[0]
 
-        if not has_weather:
+        if not has_weather and user_input is not None:
             errors[CONF_WEATHER_ENTITY_ID] = "no_weather_options"
 
         if user_input is not None and not errors:
             return self.async_create_entry(title="中医养生表", data=user_input)
 
-        weather_field = (
-            vol.Required(CONF_WEATHER_ENTITY_ID, default=weather_default)
-            if weather_default is not None
-            else vol.Required(CONF_WEATHER_ENTITY_ID)
+        weather_field = vol.Optional(
+            CONF_WEATHER_ENTITY_ID,
+            default=weather_default,
         )
 
         data_schema = vol.Schema(
@@ -104,15 +103,12 @@ class TCMBodyClockConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return TCMBodyClockOptionsFlow(config_entry)
+        return TCMBodyClockOptionsFlow()
 
 
 class TCMBodyClockOptionsFlow(config_entries.OptionsFlow):
     """Handle options flow for TCM Body Clock."""
 
-    def __init__(self, config_entry):
-        """Initialize options flow."""
-        self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
@@ -161,17 +157,16 @@ class TCMBodyClockOptionsFlow(config_entries.OptionsFlow):
         if weather_default is None and weather_entities:
             weather_default = weather_entities[0]
 
-        if not has_weather:
+        if not has_weather and user_input is not None:
             errors[CONF_WEATHER_ENTITY_ID] = "no_weather_options"
 
         if user_input is not None and not errors:
             # Save selections into options so they can be changed later
             return self.async_create_entry(title="", data=user_input)
 
-        weather_field = (
-            vol.Required(CONF_WEATHER_ENTITY_ID, default=weather_default)
-            if weather_default is not None
-            else vol.Required(CONF_WEATHER_ENTITY_ID)
+        weather_field = vol.Optional(
+            CONF_WEATHER_ENTITY_ID,
+            default=weather_default,
         )
 
         data_schema = vol.Schema(
